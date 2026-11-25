@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luca Mammone — Electrical Engineering</title>
+  <meta name="description" content="Luca Mammone — Electrical Engineering (Robotics Minor) at the University of Toronto. Analog/RF hardware, PCB design, embedded C, and FPGA digital design.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header / Intro -->
+    <header class="hero">
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        Incoming Analog &amp; Mixed-Signal Layout Intern @ Marvell (May 2027)
+      </div>
+      <h1>Luca Mammone</h1>
+      <p class="subtitle">Electrical Engineering &amp; Robotics Minor — University of Toronto</p>
+      <p class="bio">
+        I study Electrical Engineering at the University of Toronto, focusing on analog/RF circuit design, 
+        custom PCB layout, bare-metal embedded firmware, and digital hardware in Verilog on FPGA boards.
+      </p>
+
+      <nav class="links">
+        <a href="resume.pdf" class="btn btn-primary" target="_blank">Resume</a>
+        <a href="https://www.linkedin.com/in/YOUR_LINKEDIN_HANDLE" class="btn btn-secondary" target="_blank">LinkedIn</a>
+        <a href="https://github.com/YOUR_GITHUB_USERNAME" class="btn btn-secondary" target="_blank">GitHub</a>
+        <a href="mailto:luca.mammone@mail.utoronto.ca" class="btn btn-secondary">luca.mammone@mail.utoronto.ca</a>
+      </nav>
+    </header>
+
+    <!-- Projects Section -->
+    <section class="projects-section">
+      <div class="section-header">
+        <h2>Projects</h2>
+        <span class="mono-label">Analog / RF · Embedded · FPGA RTL</span>
+      </div>
+
+      <div class="project-grid">
+
+        <!-- Project 1: Class-D RF Power Amplifier -->
+        <article class="card">
+          <div class="card-media">
+            <img src="assets/sdr-amp.jpg" alt="8–16 MHz Class-D RF Power Amplifier PCB" onerror="this.style.display='none'">
+            <span class="year-tag">2026</span>
+          </div>
+          <div class="card-body">
+            <h3>8–16 MHz Class-D SDR Power Amplifier</h3>
+            <p class="card-desc">
+              Designed, fabricated, and bench-tuned a switching Class-D RF power amplifier and 5-pole LC filter PCB 
+              for a Software-Defined Radio, achieving 0.73% THD and under 0.4 W idle power.
+            </p>
+            <div class="tags">
+              <span>Altium Designer</span>
+              <span>LTspice</span>
+              <span>RF / Class-D</span>
+              <span>Oscilloscope Bench Test</span>
+            </div>
+            <div class="card-actions">
+              <a href="projects/sdr-power-amp/" class="link-detail">Schematics &amp; Bench Data →</a>
+              <a href="https://github.com/YOUR_GITHUB_USERNAME/sdr-class-d-amp" class="link-code" target="_blank">GitHub ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Project 2: PixelDraw -->
+        <article class="card">
+          <div class="card-media">
+            <img src="assets/pixeldraw.jpg" alt="PixelDraw OpenCV and Nios V VGA Drawing System" onerror="this.style.display='none'">
+            <span class="year-tag">2026</span>
+          </div>
+          <div class="card-body">
+            <h3>PixelDraw: Real-Time Optical Tracking Canvas</h3>
+            <p class="card-desc">
+              Closed-loop tracking and drawing system pairing a 30 FPS Python/OpenCV HSV marker tracker over JTAG UART 
+              with bare-metal C firmware on a Nios V RISC-V processor driving a VGA display on a DE1-SoC.
+            </p>
+            <div class="tags">
+              <span>RISC-V (Nios V)</span>
+              <span>Bare-Metal C</span>
+              <span>Python / OpenCV</span>
+              <span>JTAG UART / VGA</span>
+            </div>
+            <div class="card-actions">
+              <a href="projects/pixeldraw/" class="link-detail">Architecture &amp; Code →</a>
+              <a href="https://github.com/YOUR_GITHUB_USERNAME/pixeldraw" class="link-code" target="_blank">GitHub ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Project 3: FPGA Blackjack -->
+        <article class="card">
+          <div class="card-media">
+            <img src="assets/blackjack.jpg" alt="FPGA Blackjack on DE1-SoC" onerror="this.style.display='none'">
+            <span class="year-tag">2025</span>
+          </div>
+          <div class="card-body">
+            <h3>Blackjack in Hardware</h3>
+            <p class="card-desc">
+              A Blackjack game built entirely in synthesizable Verilog RTL on the DE1-SoC: PS/2 keyboard in, VGA out, 
+              finite state machine game logic, and a hardware LFSR card dealer.
+            </p>
+            <div class="tags">
+              <span>Verilog</span>
+              <span>ModelSim</span>
+              <span>Quartus</span>
+              <span>VGA / PS/2</span>
+            </div>
+            <div class="card-actions">
+              <a href="projects/fpga-blackjack/" class="link-detail">RTL &amp; FSM Write-up →</a>
+              <a href="https://github.com/YOUR_GITHUB_USERNAME/fpga-blackjack" class="link-code" target="_blank">GitHub ↗</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Luca Mammone · Hosted on GitHub Pages</p>
+    </footer>
+
+  </div>
+</body>
+</html>
