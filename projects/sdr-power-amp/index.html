@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8–16 MHz Class-D SDR Power Amplifier — Luca Mammone</title>
+  <meta name="description" content="Design, PCB layout, bench debugging, and RF verification of an 8–16 MHz Class-D power amplifier and 5-pole LC filter for a Software-Defined Radio.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="project.css">
+</head>
+<body>
+  <div class="container">
+    <article class="article">
+
+      <a href="../../" class="back-link">← Back to All Projects</a>
+
+      <div class="proj-meta">ECE295 Hardware Design · University of Toronto · 2026</div>
+      <h1>8–16 MHz Class-D SDR Power Amplifier</h1>
+
+      <div class="tags" style="margin-bottom: 1.5rem;">
+        <span>Altium Designer</span>
+        <span>LTspice</span>
+        <span>Class-D RF</span>
+        <span>5-Pole LC Filter</span>
+        <span>Keysight DSOX1202G</span>
+      </div>
+
+      <p class="lede">
+        Designed, fabricated, and bench-verified the final RF transmit stage (Subsystem F) for a Flexible Radio Transceiver (FLRTRX). 
+        The board amplifies a weak 890 mVpp carrier into a filtered, low-distortion 14 MHz output driving a 50 &Omega; antenna load, 
+        with active-low transmit enable control to shut down the amplifier during receive mode.
+      </p>
+
+      <!-- Spec Summary -->
+      <div class="spec-grid">
+        <div class="spec-box">
+          <div class="spec-label">Output Power</div>
+          <div class="spec-value">1.22 W</div>
+          <div class="spec-note">At 14 MHz into 50 &Omega; (Spec: 1–10 W)</div>
+        </div>
+        <div class="spec-box">
+          <div class="spec-label">Measured THD</div>
+          <div class="spec-value">0.73%</div>
+          <div class="spec-note">At 14 MHz FFT (Spec: &lt; 10%)</div>
+        </div>
+        <div class="spec-box">
+          <div class="spec-label">DC-RF Efficiency</div>
+          <div class="spec-value">37%</div>
+          <div class="spec-note">12.0 V &times; 0.275 A (3.31 W DC)</div>
+        </div>
+        <div class="spec-box">
+          <div class="spec-label">TX / RX Power</div>
+          <div class="spec-value">3.31 W / 0.38 W</div>
+          <div class="spec-note">Active-low /TXEN verified</div>
+        </div>
+      </div>
+
+      <!-- Architecture -->
+      <h2>System Architecture &amp; PCB Design</h2>
+      <p>
+        To keep the RF transmit path reliable and straightforward to probe on the bench, the board uses a four-stage single-ended architecture:
+      </p>
+      <ul>
+        <li><strong>High-Speed Comparator (TLV3601 / ADCMP600):</strong> Converts the incoming low-amplitude RF sine wave into a 0–5 V square wave with nanosecond-scale propagation delay.</li>
+        <li><strong>Low-Side Gate Driver (UCC27614):</strong> Supplies high peak gate current for the switching MOSFET and provides an enable pin (<code>EN</code>) controlled by an inverted <code>/TXEN</code> signal.</li>
+        <li><strong>Class-D Switching Stage (IRF510):</strong> Switches the +12 V rail through an RF choke (<code>L2</code>) to generate high-amplitude switching pulses.</li>
+        <li><strong>5-Pole LC Reconstruction Filter:</strong> Attenuates switching harmonics above 16 MHz, reconstructing a clean fundamental sine wave at <code>PA_OUT</code>.</li>
+      </ul>
+
+      <div class="figure">
+        <img src="images/schematic.png" alt="Altium Schematic of the Class-D Power Amplifier and 5-Pole LC Filter" onerror="this.closest('.figure').style.display='none'">
+        <div class="caption">Fig 1. Altium schematic divided into Inverter, Comparator, Gate Driver, Class-D Amplifier, and 5-Pole LC Filter blocks.</div>
+      </div>
+
+      <div class="gallery-2">
+        <div class="figure">
+          <img src="images/pcb-2d.png" alt="Altium 2D PCB Layout" onerror="this.closest('.figure').style.display='none'">
+          <div class="caption">Fig 2. 2-layer Altium PCB layout with top +12 V copper pour and bottom GND plane.</div>
+        </div>
+        <div class="figure">
+          <img src="images/pcb-3d.png" alt="Altium 3D PCB Render" onerror="this.closest('.figure').style.display='none'">
+          <div class="caption">Fig 3. 3D board render showing the revised MOSFET footprint and decoupling placement.</div>
+        </div>
+      </div>
+
+      <!-- Prototyping & Debugging -->
+      <h2>Prototyping, Bring-Up &amp; Hardware Rework</h2>
+      <p>
+        Before spinning the PCB, individual stages were breadboarded and characterized on a Keysight waveform generator and oscilloscope. 
+        Once fabricated, initial board bring-up uncovered three hardware faults that required root-cause diagnosis on the bench and physical PCB rework:
+      </p>
+
+      <div class="gallery-2">
+        <div class="figure">
+          <img src="images/breadboard.jpg" alt="Breadboard prototype under oscilloscope probe" onerror="this.closest('.figure').style.display='none'">
+          <div class="caption">Fig 4. Early breadboard stage validation using SMD breakout adapters.</div>
+        </div>
+        <div class="figure">
+          <img src="images/bench-scope.jpg" alt="Keysight DSOX1202G oscilloscope waveform verification" onerror="this.closest('.figure').style.display='none'">
+          <div class="caption">Fig 5. Bench verification of comparator switching edges against the RF sine input.</div>
+        </div>
+      </div>
+
+      <h3>1. Gate-Driver Decoupling Capacitor Error (C3 / C13)</h3>
+      <p>
+        In the first revision, decoupling capacitors <code>C13</code> and <code>C3</code> were wired in series with the +12 V rail feeding <code>U1</code>, blocking DC power from reaching the gate driver. 
+        We isolated the open rail with a multimeter, shorted <code>C13</code> to restore +12 V continuity, and soldered a bypass capacitor directly between <code>VDD</code> and a nearby <code>GND</code> pad.
+      </p>
+
+      <h3>2. Missing Copper-Pour Connections on TXEN Inverter (U3)</h3>
+      <p>
+        Pads 3 (<code>GND</code>) and 5 (<code>VCC</code>) of the SOT-23 <code>SN74LVC1G14</code> inverter were not tied to the board's power and ground pours. 
+        To restore active-low <code>/TXEN</code> gating without waiting for a board respin, we prototyped a discrete NPN BJT inverter (<code>TIP29CG</code> with a bias divider) on a breadboard, verified logic inversion, and soldered it directly onto the PCB.
+      </p>
+
+      <h3>3. SMD MOSFET Thermal Runaway &amp; IRF510 Retrofit (Q1)</h3>
+      <p>
+        The original 2&times;2 mm SON <code>CSD16301Q2</code> MOSFET repeatedly overheated and failed short between +12 V and GND across three units. 
+        We replaced it with a through-hole <strong>IRF510</strong> mounted to a bolted heatsink—its ~25 ns combined rise/fall time clears the 62.5 ns period at 16 MHz—and wired its gate, drain, and source to nearby filter and driver nets.
+      </p>
+
+      <div class="figure">
+        <img src="images/assembled-pcb.jpg" alt="Final Assembled and Reworked Power Amplifier PCB" onerror="this.closest('.figure').style.display='none'">
+        <div class="caption">Fig 6. Final working PCB featuring the bolted heatsinked IRF510 retrofit, discrete TIP29CG inverter patch, and corrected C3/C13 decoupling.</div>
+      </div>
+
+      <!-- Signal Transformation -->
+      <h2>Stage-by-Stage Signal Verification (14 MHz)</h2>
+      <p>
+        Every stage was probed sequentially using a Keysight <code>DSOX1202G</code> oscilloscope to verify gain, switching edges, and harmonic suppression through the 5-pole filter:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Test Point</th>
+              <th>Circuit Stage</th>
+              <th>Measured Vpp</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PA_IN_P</td>
+              <td>Mainboard RF Input</td>
+              <td class="mono">890 mVpp</td>
+              <td class="mono">14.00 MHz</td>
+            </tr>
+            <tr>
+              <td>J4</td>
+              <td>Comparator Output (PWM)</td>
+              <td class="mono">5.39 Vpp</td>
+              <td class="mono">14.04 MHz</td>
+            </tr>
+            <tr>
+              <td>J7</td>
+              <td>Gate Driver Output (HO)</td>
+              <td class="mono">14.7 Vpp</td>
+              <td class="mono">14.40 MHz</td>
+            </tr>
+            <tr>
+              <td>J8</td>
+              <td>MOSFET Drain Switching Node (HS)</td>
+              <td class="mono">28.7 Vpp</td>
+              <td class="mono">14.04 MHz</td>
+            </tr>
+            <tr>
+              <td>C9</td>
+              <td>Mid-Filter (After L-Match)</td>
+              <td class="mono">30.2 Vpp</td>
+              <td class="mono">14.00 MHz</td>
+            </tr>
+            <tr>
+              <td>PA_OUT</td>
+              <td>Final Output (Post-Attenuator)</td>
+              <td class="mono">221 mVpp (22.1 Vpp)</td>
+              <td class="mono">14.00 MHz</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Harmonic Distortion &amp; Thermal Verification</h2>
+      <p>
+        FFT measurements at 14 MHz recorded the fundamental at <code>&minus;23.6 dBV</code> with harmonics suppressed down to <code>&minus;67.1 dBV</code> (2nd), <code>&minus;74.5 dBV</code> (3rd), <code>&minus;79.3 dBV</code> (4th), and <code>&minus;79.8 dBV</code> (5th), yielding <strong>0.73% THD</strong>—well below the 10% limit.
+      </p>
+      <p>
+        Thermal imaging with a Keysight <code>U5855A</code> after 1 minute of continuous transmit operation confirmed that the three highest-dissipation components—the <code>IRF510</code> MOSFET, <code>L4</code> filter inductor, and <code>U1</code> gate driver—all stabilized safely between <strong>41 &deg;C and 44 &deg;C</strong>.
+      </p>
+
+      <div class="gallery-2">
+        <div class="figure">
+          <img src="images/fft-thd.png" alt="14 MHz FFT Spectrum showing 0.73% THD" onerror="this.closest('.figure').style.display='none'">
+          <div class="caption">Fig 7. Output FFT at 14 MHz showing 43.5 dB of 2nd-harmonic suppression (0.73% THD).</div>
+        </div>
+        <div class="figure">
+          <img src="images/thermal.png" alt="Keysight U5855A Thermal Imaging of IRF510, L4, and U1" onerror="this.closest('.figure').style.display='none'">
+          <div class="caption">Fig 8. Keysight U5855A thermal check after 1 minute of TX: Q1, L4, and U1 all held at 41–44 &deg;C.</div>
+        </div>
+      </div>
+
+      <!-- Live Working Demo -->
+      <h2>Live SDR Integration Demo</h2>
+      <p>
+        Mounted onto the full FLRTRX transceiver mainboard, the reworked power amplifier successfully transmitted a live RF carrier on the bench:
+      </p>
+
+      <div class="figure">
+        <video controls playsinline preload="metadata">
+          <source src="images/demo.mp4" type="video/mp4">
+          <source src="images/demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Fig 9. Live RF transmission test with the power amplifier integrated on the FLRTRX mainboard.</div>
+      </div>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+        <div>
+          <span class="nav-hint">Back to</span>
+          <a href="../../">← All Projects</a>
+        </div>
+        <div style="text-align: right;">
+          <span class="nav-hint">Next Project</span>
+          <a href="../pixeldraw/">PixelDraw: Optical Tracking Canvas →</a>
+        </div>
+      </nav>
+
+    </article>
+  </div>
+</body>
+</html>
